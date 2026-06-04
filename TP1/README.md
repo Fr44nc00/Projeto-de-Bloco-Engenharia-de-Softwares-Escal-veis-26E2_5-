@@ -111,3 +111,5 @@ sequenceDiagram
 ---
 
 ## 📹 Vídeo de Apresentação
+
+https://youtu.be/JF-V-zpRuDI
