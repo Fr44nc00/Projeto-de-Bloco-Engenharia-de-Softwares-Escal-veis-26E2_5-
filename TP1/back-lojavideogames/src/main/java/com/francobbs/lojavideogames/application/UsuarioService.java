@@ -1,0 +1,41 @@
+package com.francobbs.lojavideogames.application;
+
+import com.francobbs.lojavideogames.domain.Usuario;
+import com.francobbs.lojavideogames.infrastructure.UsuarioRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class UsuarioService {
+    private final UsuarioRepository repository;
+
+    public UsuarioService(UsuarioRepository repository) {
+        this.repository = repository;
+    }
+
+    public List<Usuario> listar() {
+        return repository.findAll();
+    }
+
+    public Usuario buscarPorId(Long id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    public Usuario cadastrar(Usuario usuario) {
+        return repository.save(usuario);
+    }
+
+    public Usuario atualizar(Long id, Usuario usuario) {
+        usuario.setId(id);
+        return repository.save(usuario);
+    }
+
+    public boolean deletar(Long id) {
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+}
