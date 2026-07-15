@@ -1,5 +1,9 @@
 # Projeto-de-Bloco-Engenharia-de-Softwares-Escal-veis-26E2_5-
 
+---
+
+# TP1
+
 ## 📖 Visão Geral
 Este projeto consiste em uma aplicação de **Loja de Videogames**, desenvolvida com:
 - **Back-end:** Spring Boot (Java 21) + Spring Data JPA + H2 Database
@@ -113,3 +117,18 @@ sequenceDiagram
 ## 📹 Vídeo de Apresentação
 
 https://youtu.be/JF-V-zpRuDI
+
+---
+
+# TP2
+
+---
+
+## Principais Alterações no Código
+
+1. Criação de TipoUsuario e Plataforma para formalização dos dados.
+2. Criação de consultas personalizadas em com Usuario, Jogo e Compra.
+3. Adição de @Transactional para as ações que lidam com compra e venda.
+4. Adição de FetchType.LAZY em relacionamentos Many para evitar puxar dados desnecessários.
+5. Desenvolvimento do histórico no código.
+6. Criação de algumas classes de teste para aumentar a robustez do código.
