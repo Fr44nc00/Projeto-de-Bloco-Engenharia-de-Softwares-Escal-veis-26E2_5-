@@ -1,0 +1,65 @@
+package com.francobbs.usuarioservice.interfaces;
+
+import com.francobbs.usuarioservice.application.UsuarioService;
+import com.francobbs.usuarioservice.domain.TipoUsuario;
+import com.francobbs.usuarioservice.domain.Usuario;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/usuarios")
+@CrossOrigin("*")
+public class UsuarioController {
+    private final UsuarioService service;
+
+    public UsuarioController(UsuarioService service) {
+        this.service = service;
+    }
+
+    @GetMapping
+    public List<Usuario> listar() {
+        return service.listar();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id) {
+        Usuario usuario = service.buscarPorId(id);
+        return usuario != null ? ResponseEntity.ok(usuario) : ResponseEntity.notFound().build();
+    }
+
+    @PostMapping
+    public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) {
+        Usuario salvo = service.cadastrar(usuario);
+        return ResponseEntity.ok(salvo);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuario) {
+        Usuario atualizado = service.atualizar(id, usuario);
+        return atualizado != null ? ResponseEntity.ok(atualizado) : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        boolean deletado = service.deletar(id);
+        return deletado ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Usuario> buscarPorEmail(@PathVariable String email) {
+        Usuario usuario = service.buscarPorEmail(email);
+        return usuario != null ? ResponseEntity.ok(usuario) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/tipo/{tipo}")
+    public List<Usuario> buscarPorTipo(@PathVariable TipoUsuario tipo) {
+        return service.buscarPorTipo(tipo);
+    }
+
+    @GetMapping("/nome/{nome}")
+    public List<Usuario> buscarPorNome(@PathVariable String nome) {
+        return service.buscarPorNome(nome);
+    }
+}
