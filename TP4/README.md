@@ -132,3 +132,222 @@ https://youtu.be/JF-V-zpRuDI
 4. Adição de FetchType.LAZY em relacionamentos Many para evitar puxar dados desnecessários.
 5. Desenvolvimento do histórico no código.
 6. Criação de algumas classes de teste para aumentar a robustez do código.
+
+# TP3
+
+---
+
+## Principais Alterações no Código
+
+1. Refatoração da aplicação monolítica para uma arquitetura baseada em microsserviços.
+2. Criação do microsserviço usuario-service, responsável pelo gerenciamento de usuários.
+3. Criação do microsserviço jogo-service, responsável pelo gerenciamento de jogos.
+4. Implementação do Eureka Server para descoberta de serviços.
+5. Registro automático dos microsserviços no Eureka.
+6. Implementação de clientes REST (UsuarioClient e JogoClient) para comunicação entre serviços.
+7. Configuração de Load Balancing através do Spring Cloud LoadBalancer.
+8. Separação dos dados em bancos independentes para cada microsserviço.
+9. Expansão da cobertura de testes para contemplar os novos serviços.
+
+---
+
+## Atualização do Modelo de Domínio
+
+### Domínios Separados
+
+#### usuario-service
+
+Responsável por: Usuário e TipoUsuário
+
+Principais funcionalidades:
+1. Cadastro de usuários
+2. Consulta de usuários
+3. Busca por e-mail
+4. Busca por nome
+5. Busca por tipo
+
+#### jogo-service
+
+Responsável por: Jogo e Plataforma
+
+Principais funcionalidades:
+1. Cadastro de jogos
+2. Consulta de jogos
+3. Busca por título
+4. Busca por plataforma
+5. Busca por preço
+
+#### lojavideogames
+Reponsável por: Compra e Histórico
+
+O serviço de compras passou a consumir dados dos microsserviços de usuários e jogos para validação e cálculo do valor total das compras.
+
+---
+
+## Arquitetura da Solução Atualizada
+
+### Componentes Principais
+
+#### Front-end
+1. React + Vite
+2. Consome a API do sistema
+
+#### Eureka Server
+1. Registro e descoberta de serviços
+
+#### Usuario Service
+1. Gerenciamento de usuários
+2. Banco H2 próprio
+
+#### Jogo Service
+1. Gerenciamento de jogos
+2. Banco H2 próprio
+
+#### Lojavideogames
+1. Gerenciamento de compras
+2. Consome os microsserviços
+3. Banco H2 próprio
+
+---
+
+## Diagrama de Componentes Atualizado
+
+```mermaid
+flowchart LR
+
+    subgraph Frontend
+        A[React]
+    end
+
+    subgraph Discovery
+        E[Eureka Server]
+    end
+
+    subgraph Microservices
+        U[Usuario Service]
+        J[Jogo Service]
+        L[LojaVideoGames]
+    end
+
+    A <--> L
+
+    U --> E
+    J --> E
+    L --> E
+
+    L --> U
+    L --> J
+
+    U --> DB1["(H2 Usuarios)"]
+    J --> DB2["(H2 Jogos)"]
+    L --> DB3["(H2 Compras)"]
+```
+
+---
+
+## Diagrama de Sequência Atualizado
+
+### Exemplo: Cadastro de Compra
+
+```mermaid
+sequenceDiagram
+
+    actor Usuario
+
+    participant Front as Front-end
+    participant Loja as LojaVideoGames
+    participant Eureka as Eureka Server
+    participant User as Usuario Service
+    participant Game as Jogo Service
+    participant DB as Banco Compras
+
+    Usuario->>Front: Preenche compra
+
+    Front->>Loja: POST /compras
+
+    Loja->>Eureka: Descobre Usuario Service
+    Eureka-->>Loja: Endereço do serviço
+
+    Loja->>User: Buscar usuário
+
+    Loja->>Eureka: Descobre Jogo Service
+    Eureka-->>Loja: Endereço do serviço
+
+    Loja->>Game: Buscar jogos
+
+    Loja->>DB: Salva compra
+
+    DB-->>Loja: Compra salva
+
+    Loja-->>Front: Retorna compra
+```
+
+---
+
+## Novos Endepoints
+
+### Usuario Service
+
+#### Usuários
+1. GET /usuarios
+2. GET /usuarios/{id}
+3. POST /usuarios
+4. PUT /usuarios{id}
+5. DELETE /usuarios{id}
+
+#### Consultas
+1. GET /usuarios/email/{email}
+2. GET /usuarios/tipo/{tipo}
+3. GET /usuarios/nome/{nome}
+
+---
+
+### Jogo Service
+
+#### Jogos
+1. GET /jogos
+2. GET /jogos/{id}
+3. POST /jogos
+4. PUT /jogos/{id}
+5. DELETE /jogos/{id}
+
+#### Consultas
+1. GET /jogos/plataforma/{plataforma}
+2. GET /jogos/titulo/{titulo}
+3. GET /jogos/preco/{preco}
+
+---
+
+## Integração Entre Serviços
+A comunicação entre serviços é realizada utilizando:
+
+1. Spring Cloud Eureka
+2. Spring Cloud LoadBalancer
+3. RestTemplate
+
+### Fluxo:
+
+CompraService
+    |
+    +--> UsuarioClient
+    |         |
+    |         +--> USUARIO-SERVICE
+    |
+    +--> JogoClient
+              |
+              +--> JOGO-SERVICE
+
+---
+
+## Testes
+
+### lojavideogames
+1. CompraServiceTest
+
+### usuario-service
+1. UsuarioServiceTest
+2. UsuarioRepositoryTest
+
+### jogo-service
+1. JogoServiceTest
+2. JogoRepositoryTest
