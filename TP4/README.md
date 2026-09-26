@@ -351,3 +351,37 @@ CompraService
 ### jogo-service
 1. JogoServiceTest
 2. JogoRepositoryTest
+
+---
+
+# TP4
+
+## Avaliação da arquitetura orientada a eventos
+
+### Prós
+
+1. Desacoplamento: os serviços não precisam conhecer diretamente uns aos outros, apenas publicam e consomem eventos. Isso facilita a evolução independente dos microsserviços.
+2. Escalabilidade: como os eventos são assíncronos, é possível escalar consumidores específicos sem impactar o restante da aplicação.
+3. Resiliência: se um serviço estiver temporariamente indisponível, o evento pode ficar na fila (Kafka, RabbitMQ, etc.) e ser processado depois.
+4. Flexibilidade: novos serviços podem ser adicionados facilmente como consumidores de eventos já existentes, sem alterar os produtores.
+5. Tempo real: ideal para cenários que exigem reação imediata a mudanças (ex.: notificações, monitoramento, processamento de transações).
+
+---
+
+### Contras
+
+1. Complexidade: exige infraestrutura adicional (brokers de mensagens, monitoramento de filas, configuração de tópicos).
+2. Dificuldade de rastreamento: como os fluxos são assíncronos, pode ser mais difícil entender o caminho completo de uma transação ou depurar erros.
+3. Consistência eventual: os dados podem demorar alguns instantes para se propagar, o que não é adequado para cenários que exigem consistência imediata.
+4. Sobrecarga operacional: manter e monitorar sistemas de mensageria pode aumentar custos e exigir mais conhecimento da equipe.
+5. Testes mais complexos: validar fluxos assíncronos e garantir que todos os eventos sejam processados corretamente é mais trabalhoso.
+
+---
+
+### Cenários onde esse tipo de arquitetura é mais vantajoso
+
+1. E-commerce: cada ação do usuário (compra, pagamento, envio) gera eventos que podem ser consumidos por diferentes serviços (estoque, faturamento, logística).
+2. IoT e sistemas de monitoramento: dispositivos enviam eventos constantemente, e consumidores processam em tempo real.
+3. Processamento de pagamentos: eventos de transação podem ser consumidos por serviços de auditoria, antifraude e notificações.
+4. Aplicações de streaming: plataformas como Netflix ou Spotify usam eventos para recomendar conteúdo e monitorar uso em tempo real.
+5. Integração de microsserviços: quando vários serviços precisam reagir a mudanças sem depender de chamadas síncronas diretas.
