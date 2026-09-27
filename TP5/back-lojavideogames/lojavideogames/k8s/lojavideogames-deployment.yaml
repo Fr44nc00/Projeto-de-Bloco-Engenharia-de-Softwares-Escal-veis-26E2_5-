@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lojavideogames-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lojavideogames
+  template:
+    metadata:
+      labels:
+        app: lojavideogames
+    spec:
+      containers:
+        - name: lojavideogames
+          image: docker.io/library/lojavideogames:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_RABBITMQ_HOST
+              value: rabbitmq
+            - name: SPRING_RABBITMQ_PORT
+              value: "5672"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lojavideogames-service
+spec:
+  selector:
+    app: lojavideogames
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer

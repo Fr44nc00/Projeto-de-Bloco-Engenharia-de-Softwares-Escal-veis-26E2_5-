@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: usuario-service-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: usuario-service
+  template:
+    metadata:
+      labels:
+        app: usuario-service
+    spec:
+      containers:
+        - name: usuario-service
+          image: fr44nc00/usuario-service:latest
+          ports:
+            - containerPort: 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: usuario-service-service
+spec:
+  selector:
+    app: usuario-service
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+  type: LoadBalancer
